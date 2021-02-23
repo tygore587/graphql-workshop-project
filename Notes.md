@@ -131,6 +131,7 @@ mutation AddSpeaker {
 Here we want to create a new speaker with following fields and we want to get the id of the speaker after the speaker was created.
 
 ## Queries
+
 To query data we use the keyword query.
 
 ### Structure
@@ -149,4 +150,70 @@ query <name of query> {
    }
  }
 ```
+
 Here we get the names of all speakers.
+
+## Nullability
+
+GraphQL type system distinguishes between nullabale and non-nullable types. Simplyfies code, because no null checks are needed.
+
+### Configure
+1. `GraphQL.csproj` project file
+```
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>ConferencePlanner.GraphQL</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" Version="11.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
+```
+The important part is:
+```
+<Nullable>enable</Nullable>
+```
+2. Make DB types nullable
+The `Speaker.cs` can be completly nullable, because it doesn't have a constructor.
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+ namespace ConferencePlanner.GraphQL.Data
+ {
+     public class Speaker
+     {
+         public int Id { get; set; }
+
+         [Required]
+         [StringLength(200)]
+         public string? Name { get; set; }
+
+         [StringLength(4000)]
+         public string? Bio { get; set; }
+
+         [StringLength(1000)]
+         public string? WebSite { get; set; }
+     }
+ }
+```
+3. Make GraphQL Input values nullable. (Bio and WebSite)
+```csharp
+ namespace ConferencePlanner.GraphQL
+ {
+     public record AddSpeakerInput(
+         string Name,
+         string? Bio,
+         string? WebSite);
+ }
+```
+4. Start the server again

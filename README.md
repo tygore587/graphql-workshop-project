@@ -2,4 +2,4 @@
 This is the workshop (https://github.com/ChilliCream/graphql-workshop) repo to test out graph ql with hot chocolate
 
 # Progress
-We finished the first session.
+We finished the second session.
